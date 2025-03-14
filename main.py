@@ -5,6 +5,7 @@ import openpyxl
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import pandas as pd
 
 
 from selenium_utils import setup_driver, scroll
@@ -77,6 +78,8 @@ def initiate(c_name):
     complocate = driver.find_element(By.XPATH, '//table[@id="shareHolderPattern"]//thead')
     driver.execute_script("arguments[0].scrollIntoView(true);", complocate)
     time.sleep(0.5)
+    dates = []
+    count = 0
     for i in range(size):  
         # Find the last 4 digits of the date and make sure to stop the process once files from 2015 and earlier start appearing
         date = driver.find_element(By.XPATH, f'//tbody//tr[{i+1}]//td[@headers="shareholdingOfTotalShares asOnDate"]')
@@ -84,19 +87,24 @@ def initiate(c_name):
         final = date[-4:]
         if final == "2015":
             break
-        print("\n", date)
-        print("position:", i)
+        print("\nposition:", i)
         try:
-            sheet_date = wb_obj.sheetnames[i] # Gets the name of the first sheet in the excel file
+            sheet_date = wb_obj.sheetnames[count] # Gets the name of the first sheet in the excel file
             print(sheet_date)
             print("sheet position:", i)
-            if date == sheet_date:
+            if date == sheet_date or dates[i] == dates[i-1]:
                 print("Alr Present")
+                count += 1
                 continue
-          
+            if dates[i] != dates[i-1]:
+                dates.append((i, date))
         except:
             print("hopefully not a true error")
-
+            dates.append((i, date))
+    for i, date in dates:
+        print(f'{i} - {date}')
+    print(len(dates))
+    for i, date in dates:
         # Add a function to scroll to the element and make it visible therefore allowing the driver to click on the javascript button
         scroll(driver, i, i)
         flagAlrUpd = False
@@ -109,7 +117,7 @@ def initiate(c_name):
         else:
             wb_obj.create_sheet(date, i)
             sheet = wb_obj[date]
-        print(sheet_date)
+        print(date)
         print("created sheet position:", i)
         
         # Acquire the number of rows and columns
@@ -130,5 +138,9 @@ def initiate(c_name):
         print("Updated")
 
 if __name__ == "__main__":
-    c_name = 'INFY'
-    initiate(c_name)
+    # df = pd.read_csv("ind_nifty50list.csv", usecols=["Symbol"])  # Load only the 'Symbol' column
+    # symbols = df["Symbol"].tolist()
+    # for symbol in symbols:
+    #     print(symbol)
+    #     initiate(symbol)
+    initiate('CIPLA')

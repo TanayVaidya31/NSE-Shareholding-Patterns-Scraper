@@ -20,7 +20,7 @@ def rowcol(driver, sheet):
     # Add a condition to catch if the driver acquired the incorrect number of rows and columns
     if rows1 == 1 or rows2 == 1 or cols == 1:
         print("problem; redoing yaah")
-        time.sleep(0.1)
+        time.sleep(0.25)
         rowcol(driver, sheet) # Repeat the function
     
     # Gather the data from the two tables after clicking to open them

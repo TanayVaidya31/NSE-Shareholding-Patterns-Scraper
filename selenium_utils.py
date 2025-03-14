@@ -22,6 +22,13 @@ def setup_driver():
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     # The below feature stops chrome from flagging the browser as being controlled by and automated software, thereby allowing to bypass all bot detection
     options.add_argument('--disable-blink-features=AutomationControlled')
+    # options.add_experimental_option("useAutomationExtension", False)
+    options.add_argument("--disable-gpu")
+    options.add_argument("--disable-dev-shm-usage")
+    options.page_load_strategy = 'eager'
+    options.add_argument("--disable-animations")
+    options.add_argument("--no-sandbox")
+
     options.add_argument("--headless=new")
     prefs = {
         # Adjust path as needed
